@@ -52,7 +52,7 @@ class GestureRecognizer extends Component {
   }
 
   _gestureIsClick(gestureState) {
-    return Math.abs(gestureState.dx) < 3;
+    return Math.abs(gestureState.dx) < 5;
   }
 
   _handlePanResponderEnd(evt, gestureState) {
