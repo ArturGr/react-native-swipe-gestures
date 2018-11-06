@@ -21,6 +21,8 @@ function isValidSwipe(velocity, velocityThreshold, directionalOffset, directiona
 
 class GestureRecognizer extends Component {
 
+  blocked = false;
+
   constructor(props, context) {
     super(props, context);
     this.swipeConfig = Object.assign(swipeConfig, props.config);
@@ -36,15 +38,15 @@ class GestureRecognizer extends Component {
     this._panResponder = PanResponder.create({ //stop JS beautify collapse
       onStartShouldSetPanResponder: shouldSetResponder,
       onMoveShouldSetPanResponder: shouldSetResponder,
-      onPanResponderRelease: (e, g) => {  responderEnd(e, g) },
-      onPanResponderTerminate: (e, g) => {  responderEnd(e, g) },
+      onPanResponderRelease: (e, g) => { responderEnd(e, g) },
+      onPanResponderTerminate: (e, g) => { responderEnd(e, g) },
       onShouldBlockNativeResponder: () => true,
       onPanResponderTerminationRequest: () => false,
     });
   }
 
   _handleShouldSetPanResponder(evt, gestureState) {
-    if (evt.nativeEvent.touches.length === 1 && !this._gestureIsClick(gestureState)) {
+    if (this.blocked !== true && evt.nativeEvent.touches.length === 1 && !this._gestureIsClick(gestureState)) {
       this.props.onBlockResponder && this.props.onBlockResponder();
       return true;
     }
@@ -102,6 +104,14 @@ class GestureRecognizer extends Component {
     const { vy, dx } = gestureState;
     const { velocityThreshold, directionalOffsetThreshold } = this.swipeConfig;
     return isValidSwipe(vy, velocityThreshold, dx, directionalOffsetThreshold);
+  }
+
+  block() {
+    this.blocked = true;
+  }
+
+  release() {
+    this.blocked = false;
   }
 
   render() {
